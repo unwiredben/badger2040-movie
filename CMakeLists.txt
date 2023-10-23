@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 # Change your executable name to something creative!
-set(NAME badger2040-dvdbounce) # <-- Name your project/executable here!
+set(NAME badger2040-movie) # <-- Name your project/executable here!
 
 set(PICO_SDK_PATH "../../pico-sdk")
 set(PIMORONI_PICO_PATH "../../pimoroni-pico")
@@ -13,7 +13,7 @@ include(pico_sdk_import.cmake)
 # Gooey boilerplate
 project(${NAME} C CXX ASM)
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 # Initialize the SDK
 pico_sdk_init()
@@ -22,6 +22,12 @@ pico_sdk_init()
 add_executable(${NAME}
     main.cpp
 )
+
+# TBD: automate conversion of video to MPEG-1
+# ffmpeg -report -i input.mp4 -vcodec mpeg1video -s 224x128 -an output.mpg
+
+# TBD: convert MPEG-1 video to .h file
+# xxd -i output.mpg | sed -e "s/unsigned/const unsigned/" > MPEG1Video.h
 
 include(libraries/badger2040/badger2040)
 
