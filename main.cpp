@@ -29,6 +29,25 @@ pimoroni::Badger2040 badger;
 constexpr int WIDTH = 296;
 constexpr int HEIGHT = 128;
 
+constexpr int MOVIE_UPDATE_SPEED 1
+
+void clear_screen() {
+    badger.update_speed(0);
+
+    badger.pen(15);
+    badger.clear();
+    badger.update(true);
+    badger.update(true);
+    badger.update(true);
+    badger.update(true);
+
+    badger.pen(0);
+    badger.clear();
+    badger.update(true);
+
+    badger.update_speed(MOVIE_UPDATE_SPEED);
+}
+
 void show_frame(plm_frame_t *frame) {
     auto width = frame->width;
     auto height = frame->height;
@@ -36,10 +55,12 @@ void show_frame(plm_frame_t *frame) {
     int frameNumber = frame->time * 30;
     int x_offset = (WIDTH - width) / 2;
 
-    // printf("show_frame %d dither start\n", frameNumber);
+    // do a clear before frame 0 to clean up screen
+    if (frameNumber == 0) {
+        clear_screen();
+    }
 
     /* do 4x4 Bayer dithering on 8-bit luma pixel data */
-
     constexpr uint8_t bayerThresholdMap[4][4] = {
         {  15, 135,  45, 165  },
         { 195,  75, 225, 105  },
@@ -56,8 +77,8 @@ void show_frame(plm_frame_t *frame) {
             badger.pixel(x + x_offset, y);
         }
     }
-    // printf("show_frame %d dither done\n", frameNumber);
-    badger.partial_update(x_offset, 0, width, HEIGHT, true);
+    // badger.partial_update(x_offset, 0, width, HEIGHT, true);
+    badger.update(true);
 }
 
 void play_video() {
@@ -68,20 +89,13 @@ void play_video() {
                 false);
 
     plm_set_audio_enabled(plm, false);
+    plm_set_loop(plm, true);
 
     // Decode forever until power is removed
     while (true) {
         auto *frame = plm_decode_video(plm);
         show_frame(frame);
     }
-}
-
-void clear_screen() {
-    badger.update_speed(0);
-    badger.pen(0);
-    badger.clear();
-    badger.update();
-    badger.update_speed(3);
 }
 
 void* my_malloc(const char*, std::size_t size) {
@@ -100,9 +114,5 @@ int main() {
 
     // puts("starting badger2040-movie");
     badger.init();
-
-    while (true) {
-        clear_screen();
-        play_video();
-    }
+    play_video();
 }
