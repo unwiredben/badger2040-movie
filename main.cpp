@@ -20,6 +20,8 @@ void* my_realloc(const char* what, void* ptr, std::size_t new_size);
 #include "pl_mpeg.h"
 
 #include "MPEG1Video.h"
+#define VIDEO_DATA BadgeDemoSupercon2022_mpg
+#define VIDEO_LEN  BadgeDemoSupercon2022_mpg_len
 
 #include "common/pimoroni_common.hpp"
 #include "libraries/badger2040/badger2040.hpp"
@@ -29,7 +31,7 @@ pimoroni::Badger2040 badger;
 constexpr int WIDTH = 296;
 constexpr int HEIGHT = 128;
 
-constexpr int MOVIE_UPDATE_SPEED 1
+constexpr int MOVIE_UPDATE_SPEED = 1;
 
 void clear_screen() {
     badger.update_speed(0);
@@ -84,8 +86,8 @@ void show_frame(plm_frame_t *frame) {
 void play_video() {
     plm_t *plm =
         plm_create_with_memory(
-                const_cast<uint8_t*>(ST_Intro_BW_mpg),
-                ST_Intro_BW_mpg_len,
+                const_cast<uint8_t*>(VIDEO_DATA),
+                VIDEO_LEN,
                 false);
 
     plm_set_audio_enabled(plm, false);
